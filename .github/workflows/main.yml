@@ -21,13 +21,14 @@ jobs:
           distribution: temurin
           java-version: '17'
 
-      - name: Install Android SDK
+      - name: Set up Android SDK
         uses: android-actions/setup-android@v4
         with:
-          packages: |
-            platform-tools
-            platforms;android-35
-            build-tools;35.0.0
+          packages: ''
+
+      - name: Install Android packages
+        run: |
+          sdkmanager --install "platform-tools" "platforms;android-35" "build-tools;35.0.0"
 
       - name: Set up Gradle
         uses: gradle/actions/setup-gradle@v4
@@ -49,11 +50,10 @@ jobs:
         run: |
           SETTINGS=$(find extracted \( -name settings.gradle -o -name settings.gradle.kts \) -print -quit)
           if [ -z "$SETTINGS" ]; then
-            echo "ERROR: settings.gradle not found."
+            echo "ERROR: Gradle settings file not found."
             exit 1
           fi
-          PROJECT_DIR=$(dirname "$SETTINGS")
-          echo "project_dir=$PROJECT_DIR" >> "$GITHUB_OUTPUT"
+          echo "project_dir=$(dirname "$SETTINGS")" >> "$GITHUB_OUTPUT"
 
       - name: Build APK
         run: |
